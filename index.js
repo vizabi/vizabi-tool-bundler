@@ -98,7 +98,7 @@ module.exports = (chartName, dir, cb = () => void 0) => {
 
   return {
     build() {
-      return webpack(chartName).run(cb);
+      return webpack(config).run(cb);
     },
 
     watch() {
