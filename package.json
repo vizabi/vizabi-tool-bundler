@@ -1,0 +1,34 @@
+{
+  "name": "vizabi-tool-bundler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuguarpwnz/vizabi-tool-bundler.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kuguarpwnz/vizabi-tool-bundler/issues"
+  },
+  "homepage": "https://github.com/kuguarpwnz/vizabi-tool-bundler#readme",
+  "dependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-es2015": "^6.22.0",
+    "bourbon": "^4.3.3",
+    "clean-webpack-plugin": "^0.1.15",
+    "css-loader": "^0.26.2",
+    "extract-text-webpack-plugin": "^2.0.0",
+    "html-loader": "^0.4.5",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^6.0.2",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}
