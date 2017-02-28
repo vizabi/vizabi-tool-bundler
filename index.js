@@ -12,7 +12,8 @@ const getConfig = (chartName, dir) => {
     devtool: 'source-map',
 
     entry: {
-      [chartNameLower]: path.resolve(dir, 'src', 'index')
+      [chartNameLower]: path.resolve(dir, 'src', 'index'),
+      app: []
     },
 
     output: {
