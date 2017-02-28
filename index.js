@@ -4,16 +4,16 @@ const WebpackDevServer = require('webpack-dev-server');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const getConfig = (chartName, dir) => {
-  const chartNameLower = chartName.toLowerCase();
+const getConfig = (chartName, chartNameLower, dir) => {
   const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
 
   return {
     devtool: 'source-map',
 
     entry: {
-      [chartNameLower]: path.resolve(dir, 'src', 'index'),
-      app: []
+      [chartNameLower]: [
+        path.resolve(dir, 'src', 'index')
+      ],
     },
 
     output: {
@@ -82,30 +82,33 @@ const getConfig = (chartName, dir) => {
       })
     ],
 
-    devServer: {
-      host: '0.0.0.0',
-      contentBase: [
-        path.resolve(dir, 'public'),
-        path.resolve(dir, 'node_modules')
-      ]
-    }
   };
 };
 
 
-module.exports = (chartName, dir, cb = () => void 0) => {
-  const config = getConfig(chartName, dir);
+module.exports = (chartName, chartNameLower, dir, cb = () => void 0) => {
+  const config = getConfig(chartName, chartNameLower, dir);
 
   return {
     build() {
-      return webpack(config).run(cb);
+      return webpack(config, cb);
     },
 
     watch() {
-      config.entry.app.unshift("webpack-dev-server/client?http://localhost:8080/", "webpack/hot/dev-server");
+      config.entry[chartNameLower].unshift(
+        "webpack-dev-server/client?http://localhost:8080/",
+        "webpack/hot/dev-server"
+      );
+
       const server = new WebpackDevServer(webpack(config), {
         hot: true,
+        host: '0.0.0.0',
+        contentBase: [
+          path.resolve(dir, 'public'),
+          path.resolve(dir, 'node_modules')
+        ]
       });
+
       server.listen(8080);
     }
   };
