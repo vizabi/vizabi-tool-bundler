@@ -1,10 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const getConfig = (chartName, chartNameLower, dir) => {
+module.exports = (chartName, chartNameLower, dir) => {
   const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
 
   return {
@@ -19,9 +18,25 @@ const getConfig = (chartName, chartNameLower, dir) => {
     output: {
       path: path.resolve(dir, 'build'),
       filename: '[name].js',
-      library: chartName,
-      libraryTarget: 'umd',
-      umdNamedDefine: true
+      // library: chartName,
+      // libraryTarget: 'umd',
+      // umdNamedDefine: true
+    },
+
+    resolveLoader: {
+      modules: [
+        'web_loaders',
+        'web_modules',
+        'node_loaders',
+        'node_modules',
+        path.resolve(dir, 'node_modules'),
+      ],
+    },
+    resolve: {
+      modules: [
+        path.resolve(dir, 'src'),
+        'node_modules'
+      ]
     },
 
     module: {
@@ -66,50 +81,21 @@ const getConfig = (chartName, chartNameLower, dir) => {
     plugins: [
       new CleanWebpackPlugin(['build']),
       extractStyles,
-      new webpack.optimize.UglifyJsPlugin({
-        sourceMap: true,
-        compressor: {
-          screw_ie8: true,
-          warnings: false
-        },
-        mangle: {
-          screw_ie8: true
-        },
-        output: {
-          comments: false,
-          screw_ie8: true
-        }
-      })
+      // new webpack.optimize.UglifyJsPlugin({
+      //   sourceMap: true,
+      //   compressor: {
+      //     screw_ie8: true,
+      //     warnings: false
+      //   },
+      //   mangle: {
+      //     screw_ie8: true
+      //   },
+      //   output: {
+      //     comments: false,
+      //     screw_ie8: true
+      //   }
+      // })
     ],
 
-  };
-};
-
-
-module.exports = (chartName, chartNameLower, dir, cb = () => void 0) => {
-  const config = getConfig(chartName, chartNameLower, dir);
-
-  return {
-    build() {
-      return webpack(config, cb);
-    },
-
-    watch() {
-      config.entry[chartNameLower].unshift(
-        "webpack-dev-server/client?http://localhost:8080/",
-        "webpack/hot/dev-server"
-      );
-
-      const server = new WebpackDevServer(webpack(config), {
-        hot: true,
-        host: '0.0.0.0',
-        contentBase: [
-          path.resolve(dir, 'public'),
-          path.resolve(dir, 'node_modules')
-        ]
-      });
-
-      server.listen(8080);
-    }
   };
 };
