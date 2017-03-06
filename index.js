@@ -29,7 +29,7 @@ module.exports = (chartName, chartNameLower, dir) => {
         'web_modules',
         'node_loaders',
         'node_modules',
-        path.resolve(dir, 'node_modules'),
+        path.resolve(__dirname, 'node_modules'),
       ],
     },
     resolve: {
