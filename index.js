@@ -3,20 +3,20 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-module.exports = (chartName, chartNameLower, dir) => {
-  const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
+module.exports = (chartName, chartNameLower, dir, output) => {
+  const extractStyles = new ExtractTextPlugin(`dist/${chartNameLower}.css`);
 
   return {
     devtool: 'source-map',
 
     entry: {
-      [chartNameLower]: [
+      [`dist/${chartNameLower}`]: [
         path.resolve(dir, 'src', 'index')
       ],
     },
 
     output: {
-      path: path.resolve(dir, 'build'),
+      path: output || path.resolve(dir, 'build'),
       filename: '[name].js',
       // library: chartName,
       // libraryTarget: 'umd',
@@ -29,7 +29,7 @@ module.exports = (chartName, chartNameLower, dir) => {
         'web_modules',
         'node_loaders',
         'node_modules',
-        path.resolve(__dirname, 'node_modules'),
+        path.resolve(dir, 'node_modules'),
       ],
     },
     resolve: {
