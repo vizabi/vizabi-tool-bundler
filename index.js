@@ -99,4 +99,5 @@ module.exports = (chartName, chartNameLower, dir, output) => {
     ],
 
   };
+
 };
