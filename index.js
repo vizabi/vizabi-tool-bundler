@@ -79,7 +79,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
     },
 
     plugins: [
-      new CleanWebpackPlugin(['build']),
+      new CleanWebpackPlugin([path.resolve(dir, 'build')]),
       extractStyles,
       // new webpack.optimize.UglifyJsPlugin({
       //   sourceMap: true,
