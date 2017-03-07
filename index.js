@@ -3,6 +3,8 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
+const __PROD__ = process.env.NODE_ENV === 'production';
+
 module.exports = (chartName, chartNameLower, dir, output) => {
   const extractStyles = new ExtractTextPlugin(`dist/${chartNameLower}.css`);
 
@@ -17,10 +19,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
 
     output: {
       path: output || path.resolve(dir, 'build'),
-      filename: '[name].js',
-      // library: chartName,
-      // libraryTarget: 'umd',
-      // umdNamedDefine: true
+      filename: '[name].js'
     },
 
     resolveLoader: {
@@ -81,20 +80,22 @@ module.exports = (chartName, chartNameLower, dir, output) => {
     plugins: [
       new CleanWebpackPlugin([path.resolve(dir, 'build')]),
       extractStyles,
-      // new webpack.optimize.UglifyJsPlugin({
-      //   sourceMap: true,
-      //   compressor: {
-      //     screw_ie8: true,
-      //     warnings: false
-      //   },
-      //   mangle: {
-      //     screw_ie8: true
-      //   },
-      //   output: {
-      //     comments: false,
-      //     screw_ie8: true
-      //   }
-      // })
+      ...(__PROD__ ? [
+          new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+            compressor: {
+              screw_ie8: true,
+              warnings: false
+            },
+            mangle: {
+              screw_ie8: true
+            },
+            output: {
+              comments: false,
+              screw_ie8: true
+            }
+          })
+        ] : [])
     ],
 
   };
