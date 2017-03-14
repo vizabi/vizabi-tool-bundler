@@ -25,6 +25,7 @@
     "clean-webpack-plugin": "^0.1.15",
     "css-loader": "^0.26.2",
     "extract-text-webpack-plugin": "^2.0.0",
+    "file-loader": "^0.10.1",
     "html-loader": "^0.4.5",
     "node-sass": "^4.5.0",
     "sass-loader": "^6.0.2",

@@ -74,6 +74,13 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           ],
           loader: 'html-loader'
         },
+        {
+          test: /\.cur$/,
+          include: [
+            path.resolve(dir, 'src', 'assets', 'cursors')
+          ],
+          loader: 'file-loader'
+        },
       ]
     },
 
