@@ -79,13 +79,17 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           include: [
             path.resolve(dir, 'src', 'assets', 'cursors')
           ],
-          loader: 'file-loader'
+          loader: 'file-loader',
+          query: {
+            publicPath: path => path.split('/').slice(1).join('/'),
+            name: 'dist/assets/cursors/[name].[ext]',
+          }
         },
       ]
     },
 
     plugins: [
-      new CleanWebpackPlugin([path.resolve(dir, 'build')]),
+      new CleanWebpackPlugin([path.resolve(dir, 'build')], { root: dir }),
       extractStyles,
       ...(__PROD__ ? [
           new webpack.optimize.UglifyJsPlugin({
