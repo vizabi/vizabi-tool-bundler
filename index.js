@@ -63,6 +63,12 @@ module.exports = (chartName, chartNameLower, dir, output) => {
               }
             },
             {
+              loader: 'postcss-loader',
+              options: {
+                config: __dirname
+              }
+            },
+            {
               loader: 'sass-loader'
             }
           ])
