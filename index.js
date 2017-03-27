@@ -1,9 +1,21 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const archiver = require('archiver');
 
 const __PROD__ = process.env.NODE_ENV === 'production';
+
+class AfterBuildPlugin {
+  constructor(callback) {
+    this.callback = callback;
+  }
+
+  apply(compiler) {
+    compiler.plugin('done', this.callback);
+  }
+}
 
 module.exports = (chartName, chartNameLower, dir, output) => {
   const extractStyles = new ExtractTextPlugin(`dist/${chartNameLower}.css`);
@@ -111,6 +123,14 @@ module.exports = (chartName, chartNameLower, dir, output) => {
               comments: false,
               screw_ie8: true
             }
+          }),
+          new AfterBuildPlugin(() => {
+            const archive = archiver('zip');
+
+            archive.directory(path.resolve(dir, 'build', 'dist'), '');
+            archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
+
+            archive.finalize();
           })
         ] : [])
     ],
