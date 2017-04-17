@@ -5,6 +5,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const archiver = require('archiver');
 
+const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
 
 class AfterBuildPlugin {
@@ -18,6 +19,7 @@ class AfterBuildPlugin {
 }
 
 module.exports = (chartName, chartNameLower, dir, output) => {
+  const pkg = require(path.resolve(dir,'package.json'));
   const extractStyles = new ExtractTextPlugin(`dist/${chartNameLower}.css`);
 
   return {
@@ -108,6 +110,10 @@ module.exports = (chartName, chartNameLower, dir, output) => {
 
     plugins: [
       new CleanWebpackPlugin([path.resolve(dir, 'build')], { root: dir }),
+      new webpack.DefinePlugin({
+        __VERSION: JSON.stringify(pkg.version),
+        __BUILD: +timestamp
+      }),
       extractStyles,
       ...(__PROD__ ? [
           new webpack.optimize.UglifyJsPlugin({
