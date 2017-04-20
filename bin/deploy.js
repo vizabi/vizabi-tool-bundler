@@ -20,7 +20,7 @@ const oldPjson = JSON.parse(shell.exec("git show HEAD~1:package.json").stdout);
 const lastPublishedVersion = shell.exec("npm show " + pjson.name + " version").stdout.trim();
 const versionBump = cv(oldPjson.version, pjson.version) < 0;
 
-const bumpAndPublish = () => {
+const bump = () => {
   if (TRAVIS_BRANCH !== "develop") {
     return console.log("--- Not publishing.");
   }
@@ -77,4 +77,4 @@ const deploy = () => {
 };
 
 deploy();
-bumpAndPublish();
+bump();
