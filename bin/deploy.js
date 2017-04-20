@@ -14,7 +14,7 @@ const {
   AWS_SUBFOLDER
 } = process.env;
 
-const projectDir = path.dirname(process.cwd());
+const projectDir = process.cwd();
 const pjson = require(path.join(projectDir, 'package.json'));
 const oldPjson = JSON.parse(shell.exec("git show HEAD~1:package.json").stdout);
 const lastPublishedVersion = shell.exec("npm show " + pjson.name + " version").stdout.trim();
