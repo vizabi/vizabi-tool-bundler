@@ -71,7 +71,7 @@ const upload = (path) => {
 
 const deploy = () => {
   upload(`s3://${AWS_BUCKET}/${AWS_SUBFOLDER}/${TRAVIS_BRANCH}/`);
-  versionBump && upload(`s3://${AWS_BUCKET}/${TRAVIS_BRANCH}/`);
+  versionBump && upload(`s3://${AWS_BUCKET}/`);
 
   rmrf.sync('/.tmp');
 };
