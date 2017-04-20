@@ -20,13 +20,13 @@ class AfterBuildPlugin {
 
 module.exports = (chartName, chartNameLower, dir, output) => {
   const pkg = require(path.resolve(dir,'package.json'));
-  const extractStyles = new ExtractTextPlugin(`dist/${chartNameLower}.css`);
+  const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
 
   return {
     devtool: 'source-map',
 
     entry: {
-      [`dist/${chartNameLower}`]: [
+      [`${chartNameLower}`]: [
         path.resolve(dir, 'src', 'index')
       ],
     },
@@ -102,7 +102,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           loader: 'file-loader',
           query: {
             publicPath: path => path.split('/').slice(1).join('/'),
-            name: 'dist/assets/cursors/[name].[ext]',
+            name: 'assets/cursors/[name].[ext]',
           }
         },
       ]
@@ -133,7 +133,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           new AfterBuildPlugin(() => {
             const archive = archiver('zip');
 
-            archive.directory(path.resolve(dir, 'build', 'dist'), '');
+            archive.directory(path.resolve(dir, 'build'), '');
             archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
 
             archive.finalize();
