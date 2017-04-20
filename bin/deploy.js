@@ -65,7 +65,7 @@ const upload = (path) => {
     ` --recursive` +
     ` --no-mime-magic` +
     ` --guess-mime-type` +
-    `sync build/ "${path}"`
+    ` sync build/ "${path}"`
   );
 };
 
