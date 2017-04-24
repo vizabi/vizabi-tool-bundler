@@ -52,13 +52,6 @@ const bump = () => {
 };
 
 const upload = (path) => {
-  shell.ShellString([
-    '[default]',
-    `access_key = ${AWS_ACCESS_KEY_ID}`,
-    `secret_key = ${AWS_SECRET_KEY}`,
-    `acl_public = True`
-  ].join('\n'));
-
   shell.exec(
     `s3cmd -v --config=/tmp/.${AWS_BUCKET}-s3.s3cfg` +
     ` --acl-public` +
@@ -70,6 +63,13 @@ const upload = (path) => {
 };
 
 const deploy = () => {
+  shell.ShellString([
+    '[default]',
+    `access_key = ${AWS_ACCESS_KEY_ID}`,
+    `secret_key = ${AWS_SECRET_KEY}`,
+    `acl_public = True`
+  ].join('\n')).to(`/tmp/.${AWS_BUCKET}-s3.s3cfg`);
+
   upload(`s3://${AWS_BUCKET}/${AWS_SUBFOLDER}/${TRAVIS_BRANCH}/`);
   versionBump && upload(`s3://${AWS_BUCKET}/`);
 
