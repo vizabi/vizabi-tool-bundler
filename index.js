@@ -133,7 +133,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           new AfterBuildPlugin(() => {
             const archive = archiver('zip');
 
-            archive.directory(path.resolve(dir, 'build'), '');
+            archive.glob('**', { ignore: ['*.zip'], cwd: path.resolve(dir, 'build') });
             archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
 
             archive.finalize();
