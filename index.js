@@ -118,17 +118,12 @@ module.exports = (chartName, chartNameLower, dir, output) => {
       ...(__PROD__ ? [
           new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
-            compressor: {
-              screw_ie8: true,
-              warnings: false
+            comments: false,
+            mangle: true,
+            compress: {
+              comparisons: false,
+              warnings: false,
             },
-            mangle: {
-              screw_ie8: true
-            },
-            output: {
-              comments: false,
-              screw_ie8: true
-            }
           }),
           new AfterBuildPlugin(() => {
             const archive = archiver('zip');
