@@ -26,7 +26,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
     devtool: 'source-map',
 
     entry: {
-      [`${chartNameLower}`]: [
+      [chartNameLower]: [
         path.resolve(dir, 'src', 'index')
       ],
     },
