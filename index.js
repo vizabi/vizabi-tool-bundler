@@ -79,9 +79,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
             {
               loader: 'postcss-loader',
               options: {
-                config: {
-                  path: __dirname
-                }
+                config: __dirname
               }
             },
             {
