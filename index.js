@@ -19,7 +19,7 @@ class AfterBuildPlugin {
 }
 
 module.exports = (chartName, chartNameLower, dir, output) => {
-  const pkg = require(path.resolve(dir,'package.json'));
+  const pkg = require(path.resolve(dir, 'package.json'));
   const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
 
   return {
@@ -27,6 +27,10 @@ module.exports = (chartName, chartNameLower, dir, output) => {
 
     entry: {
       [chartNameLower]: [
+        path.resolve(dir, 'src', 'index')
+      ],
+
+      [`${chartNameLower}.min`]: [
         path.resolve(dir, 'src', 'index')
       ],
     },
@@ -118,24 +122,25 @@ module.exports = (chartName, chartNameLower, dir, output) => {
       }),
       extractStyles,
       ...(__PROD__ ? [
-          new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            comments: false,
-            mangle: true,
-            compress: {
-              comparisons: false,
-              warnings: false,
-            },
-          }),
-          new AfterBuildPlugin(() => {
-            const archive = archiver('zip');
+        new webpack.optimize.UglifyJsPlugin({
+          include: /\.min\.js$/,
+          sourceMap: true,
+          comments: false,
+          mangle: true,
+          compress: {
+            comparisons: false,
+            warnings: false,
+          },
+        }),
+        new AfterBuildPlugin(() => {
+          const archive = archiver('zip');
 
-            archive.glob('**', { ignore: ['*.zip'], cwd: path.resolve(dir, 'build') });
-            archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
+          archive.glob('**', { ignore: ['*.zip'], cwd: path.resolve(dir, 'build') });
+          archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
 
-            archive.finalize();
-          })
-        ] : [])
+          archive.finalize();
+        })
+      ] : [])
     ],
 
   };
