@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const archiver = require('archiver');
 
@@ -14,15 +15,59 @@ class AfterBuildPlugin {
   }
 
   apply(compiler) {
-    compiler.plugin('done', this.callback);
+    compiler.hooks.done.tap('AfterBuildPlugin', this.callback);
+  }
+}
+
+class NoEmitPlugin {
+  constructor(options) {
+    this.options = typeof options === "string" ? [ options ] : options;
+  }
+
+  apply(compiler) {
+    compiler.hooks.emit.tap('NoEmitPlugin', compilation => {
+      this.options.forEach(asset => {
+        delete compilation.assets[asset];
+      });
+    });
   }
 }
 
 module.exports = (chartName, chartNameLower, dir, output) => {
   const pkg = require(path.resolve(dir, 'package.json'));
-  const extractStyles = new ExtractTextPlugin(`${chartNameLower}.css`);
+  const extractStyles = new MiniCssExtractPlugin({
+    filename: "[name].css"
+  });
+  
+  const optimization = {};
+
+  if (__PROD__) {
+    optimization.minimizer = [
+      new UglifyJsPlugin({
+        include: /\.min\.js$/,
+        parallel: true,
+        sourceMap: true,
+        uglifyOptions: {
+          compress: {
+            warnings: false
+          },
+          mangle: {
+          },
+          output: {
+            comments: false,
+          }
+        }
+      })
+    ]
+  }
 
   return {
+    mode: __PROD__ ? 'production': 'development',
+
+    performance: {
+      hints: false
+    },
+
     devtool: 'source-map',
 
     entry: {
@@ -57,14 +102,14 @@ module.exports = (chartName, chartNameLower, dir, output) => {
     },
 
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.js$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           query: {
             cacheDirectory: true,
-            presets: ['es2015']
+            presets: ['env']
           }
         },
         {
@@ -72,7 +117,8 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           include: [
             path.resolve(dir, 'src')
           ],
-          loader: extractStyles.extract([
+          use: [
+            MiniCssExtractPlugin.loader,
             {
               loader: "css-loader",
               options: {
@@ -91,7 +137,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
             {
               loader: 'sass-loader'
             }
-          ])
+          ]
         },
         {
           test: /\.html$/,
@@ -114,6 +160,8 @@ module.exports = (chartName, chartNameLower, dir, output) => {
       ]
     },
 
+    optimization,
+
     plugins: [
       new CleanWebpackPlugin([path.resolve(dir, 'build')], { root: dir }),
       new webpack.DefinePlugin({
@@ -122,16 +170,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
       }),
       extractStyles,
       ...(__PROD__ ? [
-        new webpack.optimize.UglifyJsPlugin({
-          include: /\.min\.js$/,
-          sourceMap: true,
-          comments: false,
-          mangle: true,
-          compress: {
-            comparisons: false,
-            warnings: false,
-          },
-        }),
+        new NoEmitPlugin([`${chartNameLower}.min.css`, `${chartNameLower}.min.css.map`]),
         new AfterBuildPlugin(() => {
           const archive = archiver('zip');
 
