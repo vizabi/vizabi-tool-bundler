@@ -135,7 +135,10 @@ module.exports = (chartName, chartNameLower, dir, output) => {
               }
             },
             {
-              loader: 'sass-loader'
+              loader: 'sass-loader',
+              options: {
+                implementation: require("sass")
+              }
             }
           ]
         },
