@@ -92,12 +92,16 @@ module.exports = (chartName, chartNameLower, dir, output) => {
         'node_loaders',
         'node_modules',
         path.resolve(dir, 'node_modules'),
+        path.resolve(__dirname, '..'),
+        path.resolve(__dirname, 'node_modules'),
       ],
     },
     resolve: {
       modules: [
         path.resolve(dir, 'src'),
-        'node_modules'
+        'node_modules',
+        path.resolve(__dirname, '..'),
+        path.resolve(__dirname, 'node_modules'),
       ]
     },
 
@@ -107,9 +111,9 @@ module.exports = (chartName, chartNameLower, dir, output) => {
           test: /\.js$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
-          query: {
+          options: {
             cacheDirectory: true,
-            presets: ['env']
+            presets: [require.resolve('babel-preset-env')]
           }
         },
         {
@@ -155,7 +159,7 @@ module.exports = (chartName, chartNameLower, dir, output) => {
             path.resolve(dir, 'src', 'assets', 'cursors')
           ],
           loader: 'file-loader',
-          query: {
+          options: {
             publicPath: path => path.split('/').slice(1).join('/'),
             name: 'assets/cursors/[name].[ext]',
           }
