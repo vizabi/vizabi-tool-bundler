@@ -18,13 +18,13 @@ const copyright = `// ${meta.homepage} v${meta.version} Copyright ${(new Date).g
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
 
-module.exports = (chartName, chartNameLower, dirName, dir) => ({
+module.exports = (chartName, chartNameLower, dir, output) => ({
   input: {
-    [chartNameLower || meta.name]: path.resolve(__dirname,'src/index.js')
+    [chartNameLower || meta.name]: path.resolve(dir,'src/index.js')
   },
   output: {
     name: chartName || meta.name,
-    dir: (dir || "build"),
+    dir: output || path.resolve(dir, "build"),
     format: "umd",
     banner: copyright,
     sourcemap: true,
@@ -36,26 +36,26 @@ module.exports = (chartName, chartNameLower, dirName, dir) => ({
   },
   external: ["mobx", "Vizabi", "VizabiSharedComponents"],
   plugins: [
-    !dir && trash({
+    !output && trash({
       targets: ['build/*']
     }),
     copy({
       targets: [{
-        src: [path.resolve(__dirname,"src/assets")],
-        dest: dir || "build"
+        src: [path.resolve(dir,"src/assets")],
+        dest: output || path.resolve(dir, "build")
       }]
     }),
     resolve(),
     (__PROD__ && eslint()),
-    babel({
-      exclude: "node_modules/**"
-    }),
     commonjs(),
     sass({
-      include: path.resolve(__dirname,"src/**/*.scss"),
-      output: (dir || "build") + "/" + (chartNameLower || meta.name) + ".css",
+      include: path.resolve(dir,"src/**/*.scss"),
+      output: (output || path.resolve(dir, "build")) + "/" + (chartNameLower || meta.name) + ".css",
     }),
     json(),
+    // babel({
+    //   exclude: "node_modules/**"
+    // }),
     replace({
       ENV: JSON.stringify(process.env.NODE_ENV || "development"),
       __VERSION: JSON.stringify(meta.version),
