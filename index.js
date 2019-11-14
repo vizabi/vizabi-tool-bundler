@@ -1,190 +1,66 @@
-const fs = require('fs');
+/* eslint-disable no-undef */
 const path = require('path');
-const webpack = require('webpack');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const meta = require("./package.json");
+
+const babel = require("rollup-plugin-babel");
+const {eslint} = require("rollup-plugin-eslint");
+const resolve = require("rollup-plugin-node-resolve");
+const commonjs = require("rollup-plugin-commonjs");
+const replace = require("rollup-plugin-replace");
+const {terser} = require("rollup-plugin-terser");
+const sass = require("rollup-plugin-sass");
+const json = require("rollup-plugin-json");
+const trash = require("rollup-plugin-delete");
+const copy = require("rollup-plugin-copy");
 const archiver = require('archiver');
 
+const copyright = `// ${meta.homepage} v${meta.version} Copyright ${(new Date).getFullYear()} ${meta.author.name}`;
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
 
-class AfterBuildPlugin {
-  constructor(callback) {
-    this.callback = callback;
-  }
-
-  apply(compiler) {
-    compiler.hooks.done.tap('AfterBuildPlugin', this.callback);
-  }
-}
-
-class NoEmitPlugin {
-  constructor(options) {
-    this.options = typeof options === "string" ? [ options ] : options;
-  }
-
-  apply(compiler) {
-    compiler.hooks.emit.tap('NoEmitPlugin', compilation => {
-      this.options.forEach(asset => {
-        delete compilation.assets[asset];
-      });
-    });
-  }
-}
-
-module.exports = (chartName, chartNameLower, dir, output) => {
-  const pkg = require(path.resolve(dir, 'package.json'));
-  const extractStyles = new MiniCssExtractPlugin({
-    filename: "[name].css"
-  });
-  
-  const optimization = {};
-
-  if (__PROD__) {
-    optimization.minimizer = [
-      new UglifyJsPlugin({
-        include: /\.min\.js$/,
-        parallel: true,
-        sourceMap: true,
-        uglifyOptions: {
-          compress: {
-            warnings: false
-          },
-          mangle: {
-          },
-          output: {
-            comments: false,
-          }
-        }
-      })
-    ]
-  }
-
-  return {
-    mode: __PROD__ ? 'production': 'development',
-
-    performance: {
-      hints: false
-    },
-
-    devtool: 'source-map',
-
-    entry: {
-      [chartNameLower]: [
-        path.resolve(dir, 'src', 'index')
-      ],
-
-      [`${chartNameLower}.min`]: [
-        path.resolve(dir, 'src', 'index')
-      ],
-    },
-
-    output: {
-      path: output || path.resolve(dir, 'build'),
-      filename: '[name].js'
-    },
-
-    resolveLoader: {
-      modules: [
-        'web_loaders',
-        'web_modules',
-        'node_loaders',
-        'node_modules',
-        path.resolve(dir, 'node_modules'),
-      ],
-    },
-    resolve: {
-      modules: [
-        path.resolve(dir, 'src'),
-        'node_modules'
-      ]
-    },
-
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader',
-          query: {
-            cacheDirectory: true,
-            presets: ['env']
-          }
-        },
-        {
-          test: /\.scss$/,
-          include: [
-            path.resolve(dir, 'src')
-          ],
-          use: [
-            MiniCssExtractPlugin.loader,
-            {
-              loader: "css-loader",
-              options: {
-                minimize: true,
-                sourceMap: true
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: __dirname
-                }
-              }
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                implementation: require("sass")
-              }
-            }
-          ]
-        },
-        {
-          test: /\.html$/,
-          include: [
-            path.resolve(dir, 'src')
-          ],
-          loader: 'html-loader'
-        },
-        {
-          test: /\.cur$/,
-          include: [
-            path.resolve(dir, 'src', 'assets', 'cursors')
-          ],
-          loader: 'file-loader',
-          query: {
-            publicPath: path => path.split('/').slice(1).join('/'),
-            name: 'assets/cursors/[name].[ext]',
-          }
-        },
-      ]
-    },
-
-    optimization,
-
-    plugins: [
-      new CleanWebpackPlugin([path.resolve(dir, 'build')], { root: dir }),
-      new webpack.DefinePlugin({
-        __VERSION: JSON.stringify(pkg.version),
-        __BUILD: +timestamp
-      }),
-      extractStyles,
-      ...(__PROD__ ? [
-        new NoEmitPlugin([`${chartNameLower}.min.css`, `${chartNameLower}.min.css.map`]),
-        new AfterBuildPlugin(() => {
-          const archive = archiver('zip');
-
-          archive.glob('**', { ignore: ['*.zip'], cwd: path.resolve(dir, 'build') });
-          archive.pipe(fs.createWriteStream(path.resolve(dir, 'build', `${chartNameLower}.zip`)));
-
-          archive.finalize();
-        })
-      ] : [])
-    ],
-
-  };
-
-};
+module.exports = (chartName, chartNameLower, dirName, dir) => ({
+  input: {
+    [chartNameLower || meta.name]: path.resolve(__dirname,'src/index.js')
+  },
+  output: {
+    name: chartName || meta.name,
+    dir: (dir || "build"),
+    format: "umd",
+    banner: copyright,
+    sourcemap: true,
+    globals: {
+      "mobx": "mobx",
+      "Vizabi": "Vizabi",
+      "VizabiSharedComponents": "VizabiSharedComponents"
+    }
+  },
+  external: ["mobx", "Vizabi", "VizabiSharedComponents"],
+  plugins: [
+    !dir && trash({
+      targets: ['build/*']
+    }),
+    copy({
+      targets: [{
+        src: [path.resolve(__dirname,"src/assets")],
+        dest: dir || "build"
+      }]
+    }),
+    resolve(),
+    (__PROD__ && eslint()),
+    babel({
+      exclude: "node_modules/**"
+    }),
+    commonjs(),
+    sass({
+      include: path.resolve(__dirname,"src/**/*.scss"),
+      output: (dir || "build") + "/" + (chartNameLower || meta.name) + ".css",
+    }),
+    json(),
+    replace({
+      ENV: JSON.stringify(process.env.NODE_ENV || "development"),
+      __VERSION: JSON.stringify(meta.version),
+      __BUILD: +timestamp
+    }),
+    (__PROD__ && terser({output: {preamble: copyright}})),
+  ]
+});
