@@ -4,7 +4,8 @@
   "description": "These are shared build scripts for vizabi tools",
   "main": "index.js",
   "bin": {
-    "tool-deploy": "bin/deploy.js"
+    "tool-bump": "bin/bump.js",
+    "tool-deploy-s3": "bin/deployToS3.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
