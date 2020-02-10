@@ -22,11 +22,12 @@ const bump = () => {
     console.log("--- Performing version bump based on latest published version...");
     pjson.version = lastPublishedVersion;
     fs.writeFileSync(path.join(projectDir, 'package.json'), JSON.stringify(pjson, null, 2));
-    const newVersion = shell.exec("npm version --no-git-tag-version patch");
+    const newVersion = shell.exec("npm version --no-git-tag-version patch").stdout.trim();
     shell.exec("git add package.json");
     shell.exec("git config --global user.name travis");
     shell.exec("git config --global user.email travis@example.com");
-    shell.exec("git commit -m ${newVersion}");
+    shell.exec(`git commit -m ${newVersion}`);
+    shell.exec("git push");
     // need rebuild elsewhere after version bump so that the published vizabi is self-aware of its version
   }
 };
