@@ -5,6 +5,10 @@ const cv = require('compare-version');
 const fs = require('fs');
 const path = require('path');
 
+const {
+  TRAVIS_BRANCH
+} = process.env;
+
 const projectDir = process.cwd();
 const pjson = require(path.join(projectDir, 'package.json'));
 //console.log("--- Current package.json on git");
@@ -27,7 +31,7 @@ const bump = () => {
     shell.exec("git config --global user.name travis");
     shell.exec("git config --global user.email travis@example.com");
     shell.exec(`git commit -m ${newVersion}`);
-    shell.exec("git push");
+    shell.exec(`git push origin HEAD:${TRAVIS_BRANCH}`);
     // need rebuild elsewhere after version bump so that the published vizabi is self-aware of its version
   }
 };
