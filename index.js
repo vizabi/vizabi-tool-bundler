@@ -62,5 +62,9 @@ module.exports = (chartName, chartNameLower, dir, output) => ({
       __BUILD: +timestamp
     }),
     (__PROD__ && terser({output: {preamble: copyright}})),
+    //copy travis config from tool bundler to tool repo, so that one config is shared for all tools
+    copy({
+      targets: [{src: "node_modules/vizabi-tool-bundler/travis.yml", dest: ".", rename: ".travis.yml"}]
+    })
   ]
 });
