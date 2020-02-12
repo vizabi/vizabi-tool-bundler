@@ -10,6 +10,8 @@ Shared version bump script
 # How it works
 When you run `npm run build` in your tool's repo folder it starts the automatic build with rollup. The rollup config is taken from this tool bundler. The shared rollup script also copies travis.yml into the repo which will later be used in CI. That way travis config is shared too from a single source. 
 
+You would normally use these scripts by running tools on preview page when developing, or in Travis CI. 
+
 ## 🔢 Version bump
 If version in package.json is the same or lower as latest published version on npm, then increase version to a next pre-release. 🌶 Note that prerelease version order is weird: 0.0.1, 0.0.2-1, 0.0.2-2, 0.0.2, 0.0.3-1 ...
 
