@@ -6,9 +6,11 @@ const fs = require('fs');
 const path = require('path');
 
 const {
-  TRAVIS_BRANCH
+  TRAVIS_BRANCH,
+  TRAVIS_COMMIT_MESSAGE
 } = process.env;
 
+const TRAVIS_REMARK = "- by Travis CI 🚀 - skip building this commit";
 const projectDir = process.cwd();
 const pjson = require(path.join(projectDir, 'package.json'));
 //console.log("--- Current package.json on git");
@@ -22,16 +24,11 @@ const bump = () => {
   console.log("--- Current package.json version: ", pjson.version);
   console.log("--- Need to bump version:", versionBump);
 
-  if (versionBump) {
+  if (versionBump && !TRAVIS_COMMIT_MESSAGE.includes(TRAVIS_REMARK)) {
     console.log("--- Performing version bump based on latest published version...");
     pjson.version = lastPublishedVersion;
     fs.writeFileSync(path.join(projectDir, 'package.json'), JSON.stringify(pjson, null, 2));
-    const newVersion = shell.exec("npm version --no-git-tag-version patch").stdout.trim();
-    shell.exec("git add package.json");
-    shell.exec("git config --global user.name travis");
-    shell.exec("git config --global user.email travis@example.com");
-    shell.exec(`git commit -m ${newVersion}`);
-    shell.exec(`git push origin HEAD:${TRAVIS_BRANCH}`);
+    const newVersion = shell.exec("npm version --no-git-tag-version prerelease").stdout.trim();
     // need rebuild elsewhere after version bump so that the published vizabi is self-aware of its version
   }
 };
