@@ -2,7 +2,6 @@
 const path = require('path');
 const meta = require("./package.json");
 
-const babel = require("rollup-plugin-babel");
 const {eslint} = require("rollup-plugin-eslint");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
@@ -53,15 +52,15 @@ module.exports = (chartName, chartNameLower, dir, output) => ({
       output: (output || path.resolve(dir, "build")) + "/" + (chartNameLower || meta.name) + ".css",
     }),
     json(),
-    // babel({
-    //   exclude: "node_modules/**"
-    // }),
     replace({
       ENV: JSON.stringify(process.env.NODE_ENV || "development"),
       __VERSION: JSON.stringify(meta.version),
       __BUILD: +timestamp
     }),
-    (__PROD__ && terser({output: {preamble: copyright}})),
+    (__PROD__ && terser({
+      output: {preamble: copyright},
+      keep_classnames: true
+    })),
     //copy travis config from tool bundler to tool repo, so that one config is shared for all tools
     copy({
       targets: [{src: "node_modules/vizabi-tool-bundler/travis.yml", dest: ".", rename: ".travis.yml"}]
