@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 const path = require('path');
-const meta = require("./package.json");
-
 const {eslint} = require("rollup-plugin-eslint");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
@@ -12,19 +10,18 @@ const trash = require("rollup-plugin-delete");
 const copy = require("rollup-plugin-copy");
 const archiver = require('archiver');
 
-const copyright = `// ${meta.homepage} v${meta.version} Copyright ${(new Date).getFullYear()} ${meta.author.name}`;
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
 
-module.exports = (chartName, chartNameLower, dir, output) => ({
+module.exports = (name, nameLower, dir, meta) => ({
   input: {
-    [chartNameLower || meta.name]: path.resolve(dir,'src/index.js')
+    [nameLower || meta.name]: path.resolve(dir,'src/index.js')
   },
   output: {
-    name: chartName || meta.name,
-    dir: output || path.resolve(dir, "build"),
+    name: name || meta.name,
+    dir: path.resolve(dir, "build"),
     format: "umd",
-    banner: copyright,
+    banner: `// ${meta.homepage} v${meta.version} build ${+timestamp} Copyright ${timestamp.getFullYear()} ${meta.author.name} and contributors`,
     sourcemap: true,
     globals: {
       "mobx": "mobx",
@@ -34,13 +31,13 @@ module.exports = (chartName, chartNameLower, dir, output) => ({
   },
   external: ["mobx", "Vizabi", "VizabiSharedComponents"],
   plugins: [
-    !output && trash({
+    trash({
       targets: ['build/*']
     }),
     copy({
       targets: [{
         src: [path.resolve(dir,"src/assets")],
-        dest: output || path.resolve(dir, "build")
+        dest: path.resolve(dir, "build")
       }]
     }),
     resolve(),
@@ -48,7 +45,7 @@ module.exports = (chartName, chartNameLower, dir, output) => ({
     commonjs(),
     sass({
       include: path.resolve(dir,"src/**/*.scss"),
-      output: (output || path.resolve(dir, "build")) + "/" + (chartNameLower || meta.name) + ".css",
+      output: (path.resolve(dir, "build")) + "/" + (nameLower || meta.name) + ".css",
     }),
     json(),
     replace({
