@@ -1,6 +1,6 @@
 {
   "name": "vizabi-tool-bundler",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "These are shared build scripts for vizabi tools",
   "main": "index.js",
   "bin": {
@@ -11,15 +11,37 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kuguarpwnz/vizabi-tool-bundler.git"
+    "url": "git+https://github.com/vizabi/vizabi-tool-bundler.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kuguarpwnz/vizabi-tool-bundler/issues"
+  "author": {
+    "name": "Gapminder Foundation",
+    "url": "https://www.gapminder.org",
+    "email": "info@gapminder.org"
   },
-  "homepage": "https://github.com/kuguarpwnz/vizabi-tool-bundler#readme",
+  "contributors": [
+    {
+      "name": "Angie",
+      "url": "https://github.com/angieskazka"
+    },
+    {
+      "name": "Jasper",
+      "url": "https://github.com/jheeffer"
+    },
+    {
+      "name": "Dima",
+      "url": "https://github.com/dab2000"
+    },
+    {
+      "name": "kuguarpwnz",
+      "url": "https://github.com/kuguarpwnz"
+    }
+  ],
+  "license": "CC-BY-4.0",  
+  "bugs": {
+    "url": "https://github.com/vizabi/vizabi-tool-bundler/issues"
+  },
+  "homepage": "https://github.com/vizabi/vizabi-tool-bundler#readme",
   "dependencies": {
     "archiver": "^3.0.0",
     "bourbon": "^5.1.0",
