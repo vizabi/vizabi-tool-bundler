@@ -51,7 +51,12 @@ module.exports = (name, nameLower, dir, meta) => ({
     replace({
       ENV: JSON.stringify(process.env.NODE_ENV || "development"),
       __VERSION: JSON.stringify(meta.version),
-      __BUILD: +timestamp
+      __BUILD: +timestamp,
+      __PACKAGE_JSON_FIELDS: JSON.stringify({
+        homepage: meta.homepage,
+        name: meta.name,
+        description: meta.description
+      })
     }),
     //copy travis config from tool bundler to tool repo, so that one config is shared for all tools
     copy({
