@@ -9,6 +9,7 @@ const json = require("rollup-plugin-json");
 const trash = require("rollup-plugin-delete");
 const copy = require("rollup-plugin-copy");
 const archiver = require('archiver');
+const visualizer = require('rollup-plugin-visualizer');
 
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
@@ -57,6 +58,9 @@ module.exports = (name, nameLower, dir, meta) => ({
         name: meta.name,
         description: meta.description
       })
+    }),
+    __PROD__ && visualizer({
+      filename: "./build/stats.html"
     }),
     //copy travis config from tool bundler to tool repo, so that one config is shared for all tools
     copy({
