@@ -9,7 +9,7 @@ const json = require("@rollup/plugin-json");
 const trash = require("rollup-plugin-delete");
 const copy = require("rollup-plugin-copy");
 const archiver = require('archiver');
-const visualizer = require('rollup-plugin-visualizer');
+const { visualizer } = require('rollup-plugin-visualizer');
 
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
@@ -50,14 +50,17 @@ module.exports = (name, nameLower, dir, meta) => ({
     }),
     json(),
     replace({
-      ENV: JSON.stringify(process.env.NODE_ENV || "development"),
-      __VERSION: JSON.stringify(meta.version),
-      __BUILD: +timestamp,
-      __PACKAGE_JSON_FIELDS: JSON.stringify({
-        homepage: meta.homepage,
-        name: meta.name,
-        description: meta.description
-      })
+      preventAssignment: true,
+      values: {
+        ENV: JSON.stringify(process.env.NODE_ENV || "development"),
+        __VERSION: JSON.stringify(meta.version),
+        __BUILD: +timestamp,
+        __PACKAGE_JSON_FIELDS: JSON.stringify({
+          homepage: meta.homepage,
+          name: meta.name,
+          description: meta.description
+        })
+      }
     }),
     __PROD__ && visualizer({
       filename: "./build/stats.html"
