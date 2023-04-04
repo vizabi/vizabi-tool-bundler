@@ -24,13 +24,15 @@ module.exports = (name, nameLower, dir, meta) => ({
     format: "umd",
     banner: `// ${meta.homepage} v${meta.version} build ${+timestamp} Copyright ${timestamp.getFullYear()} ${meta.author.name} and contributors`,
     sourcemap: true,
+    interop: "esModule",
     globals: {
       "mobx": "mobx",
-      "Vizabi": "Vizabi",
-      "VizabiSharedComponents": "VizabiSharedComponents"
+      "d3": "d3",
+      "@vizabi/core": "Vizabi",
+      "@vizabi/shared-components": "VizabiSharedComponents"
     }
   },
-  external: ["mobx", "Vizabi", "VizabiSharedComponents"],
+  external: ["mobx", "d3", "@vizabi/core", "@vizabi/shared-components"],
   plugins: [
     trash({
       targets: ['build/*']
