@@ -14,7 +14,7 @@ const { visualizer } = require('rollup-plugin-visualizer');
 const timestamp = new Date();
 const __PROD__ = process.env.NODE_ENV === 'production';
 
-module.exports = (name, nameLower, dir, meta) => ({
+module.exports = (name, nameLower, dir, meta, customGlobals = {}) => ({
   input: {
     [nameLower || meta.name]: path.resolve(dir,'src/index.js')
   },
@@ -29,10 +29,11 @@ module.exports = (name, nameLower, dir, meta) => ({
       "mobx": "mobx",
       "d3": "d3",
       "@vizabi/core": "Vizabi",
-      "@vizabi/shared-components": "VizabiSharedComponents"
+      "@vizabi/shared-components": "VizabiSharedComponents",
+      ...customGlobals
     }
   },
-  external: ["mobx", "d3", "@vizabi/core", "@vizabi/shared-components"],
+  external: ["mobx", "d3", "@vizabi/core", "@vizabi/shared-components", ...Object.keys(customGlobals)],
   plugins: [
     trash({
       targets: ['build/*']

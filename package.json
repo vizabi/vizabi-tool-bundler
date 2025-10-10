@@ -1,6 +1,6 @@
 {
   "name": "vizabi-tool-bundler",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "These are shared build scripts for vizabi tools",
   "main": "index.js",
   "bin": {
