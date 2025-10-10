@@ -43,7 +43,7 @@ module.exports = (name, nameLower, dir, meta) => ({
         dest: path.resolve(dir, "build")
       }]
     }),
-    resolve(),
+    resolve({browser: true}),
     (__PROD__ && eslint()),
     commonjs(),
     scss({
