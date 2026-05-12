@@ -31,7 +31,8 @@ module.exports = (name, nameLower, dir, meta, customGlobals = {}) => ({
       "@vizabi/core": "Vizabi",
       "@vizabi/shared-components": "VizabiSharedComponents",
       ...customGlobals
-    }
+    },
+    assetFileNames: `${nameLower || meta.name}.[ext]`
   },
   external: ["mobx", "d3", "@vizabi/core", "@vizabi/shared-components", ...Object.keys(customGlobals)],
   plugins: [
@@ -48,8 +49,8 @@ module.exports = (name, nameLower, dir, meta, customGlobals = {}) => ({
     (__PROD__ && eslint()),
     commonjs(),
     scss({
+      silenceDeprecations: ["legacy-js-api"],
       include: path.resolve(dir,"src/**/*.scss"),
-      output: (path.resolve(dir, "build")) + "/" + (nameLower || meta.name) + ".css",
     }),
     json(),
     replace({
